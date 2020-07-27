@@ -11,10 +11,9 @@ import static org.mockito.Mockito.when;
 
 import com.garbagemule.MobArena.MobArena;
 import net.milkbowl.vault.economy.Economy;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.logging.Logger;
 
@@ -23,11 +22,8 @@ public class MoneyThingParserTest {
     private MoneyThingParser subject;
     private MobArena plugin;
 
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
-
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         plugin = mock(MobArena.class);
         Economy economy = mock(Economy.class);
         when(plugin.getEconomy()).thenReturn(economy);
@@ -36,28 +32,28 @@ public class MoneyThingParserTest {
     }
 
     @Test
-    public void noPrefixNoBenjamins() {
+    void noPrefixNoBenjamins() {
         MoneyThing result = subject.parse("500");
 
         assertThat(result, is(nullValue()));
     }
 
     @Test
-    public void shortPrefix() {
+    void shortPrefix() {
         MoneyThing result = subject.parse("$500");
 
         assertThat(result, not(nullValue()));
     }
 
     @Test
-    public void longPrefix() {
+    void longPrefix() {
         MoneyThing result = subject.parse("money:500");
 
         assertThat(result, not(nullValue()));
     }
 
     @Test
-    public void nullEconomyNullMoney() {
+    void nullEconomyNullMoney() {
         Logger logger = mock(Logger.class);
         when(plugin.getEconomy()).thenReturn(null);
         when(plugin.getLogger()).thenReturn(logger);
@@ -68,9 +64,8 @@ public class MoneyThingParserTest {
     }
 
     @Test
-    public void numberFormatForNaughtyValues() {
-        exception.expect(NumberFormatException.class);
-        subject.parse("$cash");
+    void numberFormatForNaughtyValues() {
+        Assertions.assertThrows(NumberFormatException.class, () -> subject.parse("$cash"));
     }
 
 }

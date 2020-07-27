@@ -1,21 +1,27 @@
 package com.garbagemule.MobArena.signs;
 
-import static org.mockito.Mockito.*;
-
 import com.garbagemule.MobArena.framework.Arena;
 import org.bukkit.Location;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
 @SuppressWarnings("WeakerAccess")
-@RunWith(MockitoJUnitRunner.StrictStubs.class)
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 public class RedrawsArenaSignsTest {
 
     SignStore signStore;
@@ -25,18 +31,20 @@ public class RedrawsArenaSignsTest {
 
     RedrawsArenaSigns subject;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         signStore = mock(SignStore.class);
         when(signStore.findByArenaId(any()))
             .thenReturn(Collections.emptyList());
 
         templateStore = mock(TemplateStore.class);
-        when(templateStore.findById(any()))
+        lenient()
+            .when(templateStore.findById(any()))
             .thenReturn(Optional.empty());
 
         rendersTemplate = mock(RendersTemplate.class);
-        when(rendersTemplate.render(any(), any()))
+        lenient()
+            .when(rendersTemplate.render(any(), any()))
             .thenReturn(new String[]{"a", "b", "c", "d"});
 
         setsSignLines = mock(SetsLines.class);
@@ -50,17 +58,17 @@ public class RedrawsArenaSignsTest {
     }
 
     @Test
-    public void noSignsMeansNoRenderingOrLineSetting() {
+    void noSignsMeansNoRenderingOrLineSetting() {
         Arena arena = arena("castle");
 
         subject.redraw(arena);
 
-        verifyZeroInteractions(rendersTemplate);
-        verifyZeroInteractions(setsSignLines);
+        verifyNoInteractions(rendersTemplate);
+        verifyNoInteractions(setsSignLines);
     }
 
     @Test
-    public void renderFoundTemplate() {
+    void renderFoundTemplate() {
         String arenaId = "castle";
         Arena arena = arena(arenaId);
         ArenaSign sign = sign("join", arenaId);
@@ -76,7 +84,7 @@ public class RedrawsArenaSignsTest {
     }
 
     @Test
-    public void setRenderedTemplateOnSign() {
+    void setRenderedTemplateOnSign() {
         String arenaId = "castle";
         Arena arena = arena(arenaId);
         ArenaSign sign = sign("join", arenaId);
@@ -95,7 +103,7 @@ public class RedrawsArenaSignsTest {
     }
 
     @Test
-    public void renderEachTemplateOnlyOnce() {
+    void renderEachTemplateOnlyOnce() {
         String arenaId = "castle";
         Arena arena = arena(arenaId);
         String templateId1 = "join";

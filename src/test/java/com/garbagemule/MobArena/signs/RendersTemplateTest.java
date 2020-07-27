@@ -1,32 +1,35 @@
 package com.garbagemule.MobArena.signs;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
-
 import com.garbagemule.MobArena.framework.Arena;
 import com.garbagemule.MobArena.waves.WaveManager;
 import org.bukkit.entity.Player;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.Collections;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 @SuppressWarnings("WeakerAccess")
-@RunWith(MockitoJUnitRunner.StrictStubs.class)
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 public class RendersTemplateTest {
 
     RendersTemplate subject;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         subject = new RendersTemplate();
     }
 
+
     @Test
-    public void rendersArenaName() {
+    void rendersArenaName() {
         String name = "castle";
         Arena arena = arena(name, false, false);
         Template template = new Template.Builder("template")
@@ -40,7 +43,7 @@ public class RendersTemplateTest {
     }
 
     @Test
-    public void defaultsToBaseIfArenaIsNotRunning() {
+    void defaultsToBaseIfArenaIsNotRunning() {
         Arena arena = arena("castle", false, false);
         String[] base = {"this", "is", "the", "base"};
         Template template = new Template.Builder("template")
@@ -54,7 +57,7 @@ public class RendersTemplateTest {
     }
 
     @Test
-    public void idleOverridesBaseIfNotRunning() {
+    void idleOverridesBaseIfNotRunning() {
         Arena arena = arena("castle", false, false);
         String[] idle = {"relax", "don't", "do", "it"};
         Template template = new Template.Builder("template")
@@ -68,7 +71,7 @@ public class RendersTemplateTest {
     }
 
     @Test
-    public void runningOverridesBaseIfArenaIsRunning() {
+    void runningOverridesBaseIfArenaIsRunning() {
         Arena arena = arena("castle", true, false);
         String[] running = {"here", "is", "running", "yo"};
         Template template = new Template.Builder("template")
@@ -82,7 +85,7 @@ public class RendersTemplateTest {
     }
 
     @Test
-    public void lobbyOverridesBaseIfPlayersInLobby() {
+    void lobbyOverridesBaseIfPlayersInLobby() {
         Arena arena = arena("castle", false, true);
         String[] joining = {"we", "in", "da", "lobby"};
         Template template = new Template.Builder("template")
@@ -96,7 +99,7 @@ public class RendersTemplateTest {
     }
 
     @Test
-    public void readyOverridesLobbyIfPlayersReady() {
+    void readyOverridesLobbyIfPlayersReady() {
         Player ready = mock(Player.class);
         Arena arena = mock(Arena.class);
         when(arena.configName()).thenReturn("castle");
@@ -117,7 +120,7 @@ public class RendersTemplateTest {
     }
 
     @Test
-    public void readyPlayersReturnsJoiningIfNotDefined() {
+    void readyPlayersReturnsJoiningIfNotDefined() {
         Player ready = mock(Player.class);
         Arena arena = mock(Arena.class);
         when(arena.configName()).thenReturn("castle");
@@ -137,7 +140,7 @@ public class RendersTemplateTest {
     }
 
     @Test
-    public void rendersReadyListEntries() {
+    void rendersReadyListEntries() {
         Player ready = mock(Player.class);
         when(ready.getName()).thenReturn("Bobcat00");
         Player notready = mock(Player.class);
@@ -158,7 +161,7 @@ public class RendersTemplateTest {
     }
 
     @Test
-    public void doesNotRenderInvalidListEntries() {
+    void doesNotRenderInvalidListEntries() {
         Arena arena = arena("castle", false, true);
         String[] base = new String[]{"<ready-0>", "<ready--1>", "<ready-n>", "<ready-999999>"};
         Template template = new Template.Builder("template")
@@ -174,8 +177,8 @@ public class RendersTemplateTest {
         Arena arena = mock(Arena.class);
         when(arena.configName()).thenReturn(name);
         when(arena.isRunning()).thenReturn(running);
-        when(arena.getPlayersInLobby()).thenReturn(lobby ? Collections.singleton(null) : Collections.emptySet());
-        when(arena.getWaveManager()).thenReturn(mock(WaveManager.class));
+        lenient().when(arena.getPlayersInLobby()).thenReturn(lobby ? Collections.singleton(null) : Collections.emptySet());
+        lenient().when(arena.getWaveManager()).thenReturn(mock(WaveManager.class));
         return arena;
     }
 

@@ -1,19 +1,26 @@
 package com.garbagemule.MobArena.signs;
 
-import static org.mockito.Mockito.*;
-
 import com.garbagemule.MobArena.Messenger;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 @SuppressWarnings("WeakerAccess")
-@RunWith(MockitoJUnitRunner.StrictStubs.class)
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 public class HandlesSignCreationTest {
 
     StoresNewSign storesNewSign;
@@ -22,12 +29,13 @@ public class HandlesSignCreationTest {
 
     HandlesSignCreation subject;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         storesNewSign = mock(StoresNewSign.class);
 
         rendersTemplate = mock(RendersTemplateById.class);
-        when(rendersTemplate.render(any(), any()))
+        lenient()
+            .when(rendersTemplate.render(any(), any()))
             .thenReturn(new String[]{"", "", "", ""});
 
         messenger = mock(Messenger.class);
@@ -40,7 +48,7 @@ public class HandlesSignCreationTest {
     }
 
     @Test
-    public void noHeaderNoAction() {
+    void noHeaderNoAction() {
         String[] lines = {"why", "so", "serious", "?"};
         SignChangeEvent event = event(lines, null);
 
@@ -50,7 +58,7 @@ public class HandlesSignCreationTest {
     }
 
     @Test
-    public void nullLinesHandledGracefully() {
+    void nullLinesHandledGracefully() {
         String[] lines = {"[MA]", null, null, null};
         SignChangeEvent event = event(lines, null);
 
@@ -58,7 +66,7 @@ public class HandlesSignCreationTest {
     }
 
     @Test
-    public void useSignTypeIfTemplateNotAvailable() {
+    void useSignTypeIfTemplateNotAvailable() {
         String arenaId = "castle";
         String type = "join";
         String[] lines = {"[MA]", arenaId, type, null};
@@ -71,7 +79,7 @@ public class HandlesSignCreationTest {
     }
 
     @Test
-    public void useTemplateIfAvailable() {
+    void useTemplateIfAvailable() {
         String arenaId = "castle";
         String type = "join";
         String templateId = "potato";
@@ -85,7 +93,7 @@ public class HandlesSignCreationTest {
     }
 
     @Test
-    public void typeIsLowercased() {
+    void typeIsLowercased() {
         String type = "JOIN";
         String[] lines = {"[MA]", "", type, ""};
         SignChangeEvent event = event(lines, null);
@@ -97,7 +105,7 @@ public class HandlesSignCreationTest {
     }
 
     @Test
-    public void templateIdIsLowercased() {
+    void templateIdIsLowercased() {
         String templateId = "BEST-TEMPLATE";
         String[] lines = {"[MA]", "", "", templateId};
         SignChangeEvent event = event(lines, null);
@@ -109,7 +117,7 @@ public class HandlesSignCreationTest {
     }
 
     @Test
-    public void rendersTemplateAfterStoring() {
+    void rendersTemplateAfterStoring() {
         String arenaId = "castle";
         String type = "join";
         String templateId = "potato";
@@ -123,7 +131,7 @@ public class HandlesSignCreationTest {
     }
 
     @Test
-    public void errorPassedToMessenger() {
+    void errorPassedToMessenger() {
         String msg = "you messed up";
         doThrow(new IllegalArgumentException(msg))
             .when(storesNewSign).store(any(), any(), any(), any());
@@ -132,13 +140,13 @@ public class HandlesSignCreationTest {
 
         subject.on(event);
 
-        verifyZeroInteractions(rendersTemplate);
+        verifyNoInteractions(rendersTemplate);
         verify(messenger).tell(event.getPlayer(), msg);
     }
 
     private SignChangeEvent event(String[] lines, Location location) {
         Block block = mock(Block.class);
-        when(block.getLocation()).thenReturn(location);
+        lenient().when(block.getLocation()).thenReturn(location);
         Player player = mock(Player.class);
         return new SignChangeEvent(block, player, lines);
     }

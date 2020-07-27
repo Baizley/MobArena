@@ -1,22 +1,27 @@
 package com.garbagemule.MobArena.signs;
 
-import static org.mockito.Mockito.*;
-
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.Optional;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
 @SuppressWarnings("WeakerAccess")
-@RunWith(MockitoJUnitRunner.StrictStubs.class)
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 public class HandlesSignClicksTest {
 
     SignStore signStore;
@@ -24,10 +29,11 @@ public class HandlesSignClicksTest {
 
     HandlesSignClicks subject;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         signStore = mock(SignStore.class);
-        when(signStore.findByLocation(any()))
+        lenient()
+            .when(signStore.findByLocation(any()))
             .thenReturn(Optional.empty());
         invokesSignAction = mock(InvokesSignAction.class);
 
@@ -35,38 +41,38 @@ public class HandlesSignClicksTest {
     }
 
     @Test
-    public void noBlockNoFun() {
+    void noBlockNoFun() {
         PlayerInteractEvent event = event(null, null);
 
         subject.on(event);
 
-        verifyZeroInteractions(signStore);
+        verifyNoInteractions(signStore);
     }
 
     @Test
-    public void noSignBlockNoFun() {
+    void noSignBlockNoFun() {
         Block block = mock(Block.class);
         when(block.getState()).thenReturn(mock(Chest.class));
         PlayerInteractEvent event = event(null, block);
 
         subject.on(event);
 
-        verifyZeroInteractions(signStore);
+        verifyNoInteractions(signStore);
     }
 
     @Test
-    public void nonArenaSignNoFun() {
+    void nonArenaSignInvokesAction() {
         Block block = mock(Block.class);
         when(block.getState()).thenReturn(mock(Sign.class));
         PlayerInteractEvent event = event(null, block);
 
         subject.on(event);
 
-        verifyZeroInteractions(signStore);
+        verify(signStore).findByLocation(any());
     }
 
     @Test
-    public void arenaSignInvokesAction() {
+    void arenaSignInvokesAction() {
         Location location = mock(Location.class);
         Block block = mock(Block.class);
         when(block.getLocation()).thenReturn(location);

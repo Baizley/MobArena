@@ -1,5 +1,11 @@
 package com.garbagemule.MobArena.things;
 
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -7,40 +13,34 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InOrder;
 
 public class ItemStackThingParserTest {
 
     private ItemStackThingParser subject;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         subject = new ItemStackThingParser();
     }
 
     @Test
-    public void emptyStringReturnsNull() {
+    void emptyStringReturnsNull() {
         ItemStackThing result = subject.parse("");
 
         assertThat(result, is(nullValue()));
     }
 
     @Test
-    public void gibberishReturnsNull() {
+    void gibberishReturnsNull() {
         ItemStackThing result = subject.parse("I can't believe you've done this");
 
         assertThat(result, is(nullValue()));
     }
 
     @Test
-    public void fiveDirt() {
+    void fiveDirt() {
         ItemStackThing result = subject.parse("dirt:5");
 
         // ItemStack's equals() method does naughty things, so verify manually
@@ -50,28 +50,28 @@ public class ItemStackThingParserTest {
     }
 
     @Test
-    public void bareLederhosenReturnsGenericItemStackThing() {
+    void bareLederhosenReturnsGenericItemStackThing() {
         ItemStackThing result = subject.parse("leather_leggings");
 
         assertThat(result.getClass(), equalTo(ItemStackThing.class));
     }
 
     @Test
-    public void prefixedIronChestplateReturnsLeggingsThing() {
+    void prefixedIronChestplateReturnsLeggingsThing() {
         ItemStackThing result = subject.parse("leggings:leather_leggings");
 
         assertThat(result.getClass(), equalTo(LeggingsThing.class));
     }
 
     @Test
-    public void genericArmorPrefixGuessesChestplateThing() {
+    void genericArmorPrefixGuessesChestplateThing() {
         ItemStackThing result = subject.parse("armor:iron_chestplate");
 
         assertThat(result.getClass(), equalTo(ChestplateThing.class));
     }
 
     @Test
-    public void returnsNonNullCustomParserResult() {
+    void returnsNonNullCustomParserResult() {
         String input = "something:soft";
         ItemStack stack = new ItemStack(Material.SPONGE, 3);
         ItemStackParser parser = mock(ItemStackParser.class);
@@ -84,7 +84,7 @@ public class ItemStackThingParserTest {
     }
 
     @Test
-    public void customParsersInvokedInOrder() {
+    void customParsersInvokedInOrder() {
         String input = "unicorns and rainbows";
         ItemStackParser first = mock(ItemStackParser.class);
         ItemStackParser second = mock(ItemStackParser.class);
@@ -99,7 +99,7 @@ public class ItemStackThingParserTest {
     }
 
     @Test
-    public void customParsersInvokedUntilNonNullResult() {
+    void customParsersInvokedUntilNonNullResult() {
         String input = "unicorns and rainbows";
         ItemStackParser first = mock(ItemStackParser.class);
         ItemStackParser second = mock(ItemStackParser.class);
@@ -113,7 +113,7 @@ public class ItemStackThingParserTest {
         subject.parse(input);
 
         verify(first).parse(input);
-        verifyZeroInteractions(third);
+        verifyNoInteractions(third);
     }
 
 }

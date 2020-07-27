@@ -1,34 +1,30 @@
 package com.garbagemule.MobArena.things;
 
+import com.garbagemule.MobArena.MobArena;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
+
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-
-import com.garbagemule.MobArena.MobArena;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.mockito.InOrder;
 
 public class ThingManagerTest {
 
     private ThingManager subject;
 
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
-
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         MobArena plugin = mock(MobArena.class);
         subject = new ThingManager(plugin);
     }
 
     @Test
-    public void afterCoreParsersInOrder() {
+    void afterCoreParsersInOrder() {
         ThingParser first = mock(ThingParser.class);
         ThingParser second = mock(ThingParser.class);
         when(second.parse(anyString())).thenReturn(mock(Thing.class));
@@ -43,7 +39,7 @@ public class ThingManagerTest {
     }
 
     @Test
-    public void beforeCoreParsersInverseOrder() {
+    void beforeCoreParsersInverseOrder() {
         ThingParser first = mock(ThingParser.class);
         ThingParser second = mock(ThingParser.class);
         when(first.parse(anyString())).thenReturn(mock(Thing.class));
@@ -58,7 +54,7 @@ public class ThingManagerTest {
     }
 
     @Test
-    public void firstNonNullThingIsReturned() {
+    void firstNonNullThingIsReturned() {
         Thing thing = mock(Thing.class);
         ThingParser first = mock(ThingParser.class);
         ThingParser second = mock(ThingParser.class);
@@ -74,11 +70,11 @@ public class ThingManagerTest {
 
         verify(first).parse("thing");
         verify(second).parse("thing");
-        verifyZeroInteractions(third);
+        verifyNoInteractions(third);
     }
 
     @Test
-    public void throwsIfNoParsersSucceed() {
+    void throwsIfNoParsersSucceed() {
         ThingParser first = mock(ThingParser.class);
         ThingParser second = mock(ThingParser.class);
         when(first.parse("thing")).thenReturn(null);
@@ -86,9 +82,7 @@ public class ThingManagerTest {
         subject.register(first);
         subject.register(second);
 
-        exception.expect(InvalidThingInputString.class);
-
-        subject.parse("thing");
+        Assertions.assertThrows(InvalidThingInputString.class, () -> subject.parse("thing"));
     }
 
 }

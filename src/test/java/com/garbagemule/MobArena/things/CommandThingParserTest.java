@@ -1,50 +1,46 @@
 package com.garbagemule.MobArena.things;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
 public class CommandThingParserTest {
 
     private CommandThingParser subject;
 
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
-
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         subject = new CommandThingParser();
     }
 
     @Test
-    public void emptyStringReturnsNull() {
+    void emptyStringReturnsNull() {
         Thing result = subject.parse("");
 
         assertThat(result, is(nullValue()));
     }
 
     @Test
-    public void commandWithoutPrefixReturnsNull() {
+    void commandWithoutPrefixReturnsNull() {
         Thing result = subject.parse("/give <player> dirt");
 
         assertThat(result, is(nullValue()));
     }
 
     @Test
-    public void barePrefixReturnsNull() {
+    void barePrefixReturnsNull() {
         Thing result = subject.parse("cmd");
 
         assertThat(result, is(nullValue()));
     }
 
     @Test
-    public void commandWithShortPrefix() {
+    void commandWithShortPrefix() {
         String command = "/give <player> dirt";
 
         Thing result = subject.parse("cmd:" + command);
@@ -54,7 +50,7 @@ public class CommandThingParserTest {
     }
 
     @Test
-    public void commandWithLongPrefix() {
+    void commandWithLongPrefix() {
         String command = "/give <player> dirt";
 
         Thing result = subject.parse("command:" + command);
@@ -64,7 +60,7 @@ public class CommandThingParserTest {
     }
 
     @Test
-    public void commandWithTitle() {
+    void commandWithTitle() {
         String command = "/give <player> dirt";
         String title = "the best command";
 
@@ -75,17 +71,13 @@ public class CommandThingParserTest {
     }
 
     @Test
-    public void missingCloseParenThrows() {
-        exception.expect(IllegalArgumentException.class);
-
-        subject.parse("cmd(name:/give <player> dirt");
+    void missingCloseParenThrows() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> subject.parse("cmd(name:/give <player> dirt"));
     }
 
     @Test
-    public void missingColonAfterTitleThrows() {
-        exception.expect(IllegalArgumentException.class);
-
-        subject.parse("cmd(name)");
+    void missingColonAfterTitleThrows() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> subject.parse("cmd(name)"));
     }
 
 }

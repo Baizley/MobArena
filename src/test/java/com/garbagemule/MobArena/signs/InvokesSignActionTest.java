@@ -1,18 +1,24 @@
 package com.garbagemule.MobArena.signs;
 
-import static org.mockito.Mockito.*;
-
 import com.garbagemule.MobArena.Messenger;
 import com.garbagemule.MobArena.framework.Arena;
 import com.garbagemule.MobArena.framework.ArenaMaster;
 import org.bukkit.entity.Player;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 @SuppressWarnings("WeakerAccess")
-@RunWith(MockitoJUnitRunner.StrictStubs.class)
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 public class InvokesSignActionTest {
 
     ArenaMaster arenaMaster;
@@ -20,8 +26,8 @@ public class InvokesSignActionTest {
 
     InvokesSignAction subject;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         arenaMaster = mock(ArenaMaster.class);
         messenger = mock(Messenger.class);
 
@@ -29,18 +35,18 @@ public class InvokesSignActionTest {
     }
 
     @Test
-    public void infoSignDoesNothing() {
+    void infoSignDoesNothing() {
         String arenaId = "castle";
         ArenaSign sign = new ArenaSign(null, "", arenaId, "info");
         Player player = mock(Player.class);
 
         subject.invoke(sign, player);
 
-        verifyZeroInteractions(arenaMaster);
+        verifyNoInteractions(arenaMaster);
     }
 
     @Test
-    public void joinSignCallsCanJoin() {
+    void joinSignCallsCanJoin() {
         String arenaId = "castle";
         ArenaSign sign = new ArenaSign(null, "", arenaId, "join");
         Player player = mock(Player.class);
@@ -54,7 +60,7 @@ public class InvokesSignActionTest {
     }
 
     @Test
-    public void joinSignCallsPlayerJoin() {
+    void joinSignCallsPlayerJoin() {
         String arenaId = "castle";
         ArenaSign sign = new ArenaSign(null, "", arenaId, "join");
         Player player = mock(Player.class);
@@ -69,7 +75,7 @@ public class InvokesSignActionTest {
     }
 
     @Test
-    public void leaveSignCallsInChecks() {
+    void leaveSignCallsInChecks() {
         String arenaId = "castle";
         ArenaSign sign = new ArenaSign(null, "", arenaId, "leave");
         Player player = mock(Player.class);
@@ -85,7 +91,7 @@ public class InvokesSignActionTest {
     }
 
     @Test
-    public void leaveSignCallsPlayerLeave() {
+    void leaveSignCallsPlayerLeave() {
         String arenaId = "castle";
         ArenaSign sign = new ArenaSign(null, "", arenaId, "leave");
         Player player = mock(Player.class);
@@ -100,7 +106,7 @@ public class InvokesSignActionTest {
     }
 
     @Test
-    public void nonExistentArenaReportsToPlayer() {
+    void nonExistentArenaReportsToPlayer() {
         String arenaId = "castle";
         ArenaSign sign = new ArenaSign(null, "", arenaId, "join");
         Player player = mock(Player.class);

@@ -1,24 +1,26 @@
 package com.garbagemule.MobArena.signs;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
-
 import com.garbagemule.MobArena.framework.Arena;
 import com.garbagemule.MobArena.framework.ArenaMaster;
 import org.bukkit.Location;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.Optional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 @SuppressWarnings("WeakerAccess")
-@RunWith(MockitoJUnitRunner.StrictStubs.class)
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 public class StoresNewSignTest {
 
     ArenaMaster arenaMaster;
@@ -28,18 +30,13 @@ public class StoresNewSignTest {
 
     StoresNewSign subject;
 
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
-
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         arenaMaster = mock(ArenaMaster.class);
         when(arenaMaster.getArenaWithName(any()))
             .thenReturn(null);
 
         templateStore = mock(TemplateStore.class);
-        when(templateStore.findById(any()))
-            .thenReturn(Optional.empty());
 
         signStore = mock(SignStore.class);
 
@@ -54,29 +51,25 @@ public class StoresNewSignTest {
     }
 
     @Test
-    public void throwOnNonExistentArena() {
+    void throwOnNonExistentArena() {
         Location location = mock(Location.class);
         String arenaId = "castle";
-        exception.expect(IllegalArgumentException.class);
-
-        subject.store(location, arenaId, "", "");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> subject.store(location, arenaId, "", ""));
     }
 
     @Test
-    public void throwOnNonExistentTemplate() {
+    void throwOnNonExistentTemplate() {
         Location location = mock(Location.class);
         String arenaId = "castle";
         Arena arena = mock(Arena.class);
         when(arenaMaster.getArenaWithName(arenaId))
             .thenReturn(arena);
         String templateId = "template";
-        exception.expect(IllegalArgumentException.class);
-
-        subject.store(location, arenaId, templateId, "");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> subject.store(location, arenaId, templateId, ""));
     }
 
     @Test
-    public void throwOnNonInvalidSignType() {
+    void throwOnNonInvalidSignType() {
         Location location = mock(Location.class);
         String arenaId = "castle";
         Arena arena = mock(Arena.class);
@@ -87,13 +80,11 @@ public class StoresNewSignTest {
         when(templateStore.findById(templateId))
             .thenReturn(Optional.of(template));
         String signType = "not a real sign type";
-        exception.expect(IllegalArgumentException.class);
-
-        subject.store(location, arenaId, templateId, signType);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> subject.store(location, arenaId, templateId, signType));
     }
 
     @Test
-    public void storesSignAndWritesToDisk() {
+    void storesSignAndWritesToDisk() {
         Location location = mock(Location.class);
         String arenaId = "castle";
         Arena arena = mock(Arena.class);

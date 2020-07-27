@@ -1,17 +1,20 @@
 package com.garbagemule.MobArena.signs;
 
-import static org.mockito.Mockito.*;
-
 import org.bukkit.Location;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.Optional;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
 @SuppressWarnings("WeakerAccess")
-@RunWith(MockitoJUnitRunner.StrictStubs.class)
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 public class RemovesSignAtLocationTest {
 
     SignStore signStore;
@@ -19,8 +22,8 @@ public class RemovesSignAtLocationTest {
 
     RemovesSignAtLocation subject;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         signStore = mock(SignStore.class);
         savesSignStore = mock(SavesSignStore.class);
 
@@ -31,18 +34,18 @@ public class RemovesSignAtLocationTest {
     }
 
     @Test
-    public void noSignMeansNoWrite() {
+    void noSignMeansNoWrite() {
         Location location = mock(Location.class);
         when(signStore.remove(location))
             .thenReturn(Optional.empty());
 
         subject.remove(location);
 
-        verifyZeroInteractions(savesSignStore);
+        verifyNoInteractions(savesSignStore);
     }
 
     @Test
-    public void signRemovedWritesStore() {
+    void signRemovedWritesStore() {
         Location location = mock(Location.class);
         ArenaSign sign = new ArenaSign(location, "", "", "");
         when(signStore.remove(location))

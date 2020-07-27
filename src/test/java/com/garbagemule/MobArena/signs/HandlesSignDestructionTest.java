@@ -1,20 +1,26 @@
 package com.garbagemule.MobArena.signs;
 
-import static org.mockito.Mockito.*;
-
 import com.garbagemule.MobArena.Messenger;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.Optional;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
 @SuppressWarnings("WeakerAccess")
-@RunWith(MockitoJUnitRunner.StrictStubs.class)
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 public class HandlesSignDestructionTest {
 
     RemovesSignAtLocation removesSignAtLocation;
@@ -22,8 +28,8 @@ public class HandlesSignDestructionTest {
 
     HandlesSignDestruction subject;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         removesSignAtLocation = mock(RemovesSignAtLocation.class);
         messenger = mock(Messenger.class);
 
@@ -34,7 +40,7 @@ public class HandlesSignDestructionTest {
     }
 
     @Test
-    public void doesNothingWithNonArenaSign() {
+    void doesNothingWithNonArenaSign() {
         Block block = mock(Block.class);
         Player player = mock(Player.class);
         when(removesSignAtLocation.remove(any()))
@@ -43,11 +49,11 @@ public class HandlesSignDestructionTest {
 
         subject.on(event);
 
-        verifyZeroInteractions(messenger);
+        verifyNoInteractions(messenger);
     }
 
     @Test
-    public void reportsBreakageWithArenaSign() {
+    void reportsBreakageWithArenaSign() {
         Block block = mock(Block.class);
         Player player = mock(Player.class);
         ArenaSign sign = new ArenaSign(null, "", "", "");
